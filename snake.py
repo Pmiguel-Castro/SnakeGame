@@ -53,6 +53,9 @@ def main(stdscr):
         
         walk(snake, is_horizontal, is_positive)
         
+        for i in range(len(snake)-1):
+            if snake[-1] == snake[i]:
+                alive = False
         if snake[-1] == apple:
             apple = grab_apple(snake, height, width)
         elif snake[-1][0] > 9 or snake[-1][1] > 9 or snake[-1][0] < 0 or snake[-1][1] < 0:
@@ -74,6 +77,11 @@ def main(stdscr):
             stdscr.addch(i, 11, "□")
             stdscr.addch(i, 0, "□")
         stdscr.refresh()
+
+    if not alive:
+        print("You died!")
+    elif win:
+        print("You win!")
 
 if __name__ == "__main__":
     curses.wrapper(main)
