@@ -2,13 +2,14 @@ import curses
 from collections import deque
 from random import randint 
 
-def grab_apple(snake, height, width):
+def grab_apple(snake, score, height, width):
     in_snake = True
     while in_snake:
         apple = (randint(0, width-1), randint(0, height-1))
         if apple not in snake: 
             in_snake = False
-    return apple
+    score += 10
+    return apple, score
 
 def walk(snake, is_horizontal, is_positive):
     snk_head_x, snk_head_y = snake[-1]
@@ -30,10 +31,13 @@ def main(stdscr):
     width = 16
     snake = deque([(0,0)])
     apple = (randint(1, width-1), randint(1, height-1))
+    score = 0
+    
     alive = True
     win = False
     is_horizontal = False
     is_positive = True
+
 
     while alive and not win:
         action = stdscr.getch()
@@ -56,8 +60,9 @@ def main(stdscr):
         for i in range(len(snake)-1):
             if snake[-1] == snake[i]:
                 alive = False
+                break
         if snake[-1] == apple:
-            apple = grab_apple(snake, height, width)
+            apple, score = grab_apple(snake, score, height, width)
         elif snake[-1][0] >= width or snake[-1][1] >= height or snake[-1][0] < 0 or snake[-1][1] < 0:
             alive = False 
             break
@@ -69,6 +74,7 @@ def main(stdscr):
 
         stdscr.clear()
         stdscr.addch(apple[1]+1, apple[0]+1, "*")
+        stdscr.addstr(0, width+3, f"Score:{score}")
         for snk_part in snake:
             stdscr.addch(snk_part[1]+1, snk_part[0]+1, "#")
         for i in range(width+2):
@@ -78,11 +84,18 @@ def main(stdscr):
             stdscr.addch(i, width+1, "□")
             stdscr.addch(i, 0, "□")
         stdscr.refresh()
-
+    
     if not alive:
-        print("You died!")
+        stdscr.clear()
+        stdscr.addstr(height // 2, width // 2, "Game Over!")
+        stdscr.addstr(height // 2 + 1, width // 2, f"Score:{score}")
+        stdscr.refresh()
+        curses.napms(2000)
     elif win:
-        print("You win!")
+        stdscr.clear()
+        stdscr.addstr(height // 2, width // 2, "You Win!")
+        stdscr.refresh()
+        curses.napms(2000)
 
 if __name__ == "__main__":
     curses.wrapper(main)
