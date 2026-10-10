@@ -24,10 +24,10 @@ def walk(snake, is_horizontal, is_positive):
 def main(stdscr):
     curses.curs_set(0)
     stdscr.nodelay(True)
-    stdscr.timeout(100)
+    stdscr.timeout(150)
 
     height = 10
-    width = 10
+    width = 16
     snake = deque([(0,0)])
     apple = (randint(1, width-1), randint(1, height-1))
     alive = True
@@ -58,10 +58,10 @@ def main(stdscr):
                 alive = False
         if snake[-1] == apple:
             apple = grab_apple(snake, height, width)
-        elif snake[-1][0] > 9 or snake[-1][1] > 9 or snake[-1][0] < 0 or snake[-1][1] < 0:
+        elif snake[-1][0] >= width or snake[-1][1] >= height or snake[-1][0] < 0 or snake[-1][1] < 0:
             alive = False 
             break
-        elif len(snake) == 100:
+        elif len(snake) == width*height:
             win = True
             break
         else:
@@ -71,10 +71,11 @@ def main(stdscr):
         stdscr.addch(apple[1]+1, apple[0]+1, "*")
         for snk_part in snake:
             stdscr.addch(snk_part[1]+1, snk_part[0]+1, "#")
-        for i in range(12):
+        for i in range(width+2):
             stdscr.addch(0, i, "□")
-            stdscr.addch(11, i, "□")
-            stdscr.addch(i, 11, "□")
+            stdscr.addch(height+1, i, "□")
+        for i in range(height+2):    
+            stdscr.addch(i, width+1, "□")
             stdscr.addch(i, 0, "□")
         stdscr.refresh()
 
